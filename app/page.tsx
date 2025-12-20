@@ -13,6 +13,8 @@ export default function Home() {
 				<div>
 					<h1>Holidaze</h1>
 					<Link href="/about">Om oss</Link>
+					<Link href="/login">Login</Link>
+					<Link href="/register">Registrer</Link>
 				</div>
 			</main>
 		</div>
