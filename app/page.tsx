@@ -1,4 +1,5 @@
 import { Calendar, Star } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
 	return (
@@ -8,6 +9,11 @@ export default function Home() {
 
 				<Calendar className="w-6 h-6 text-green-600" />
 				<Star className="w-6 h-6 text-yellow-500" />
+
+				<div>
+					<h1>Holidaze</h1>
+					<Link href="/about">Om oss</Link>
+				</div>
 			</main>
 		</div>
 	);
