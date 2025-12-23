@@ -45,12 +45,7 @@ export const Header = () => {
 							<Home className="h-4 w-4" />
 							Explore Venues
 						</Link>
-						<Link href="/about" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-secondary" onClick={() => setIsMenuOpen(false)}>
-							About
-						</Link>
-						<Link href="/contact" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-secondary" onClick={() => setIsMenuOpen(false)}>
-							Contact
-						</Link>
+
 						<div className="mt-4 flex flex-col gap-2">
 							<button className="rounded-lg border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary">Log in</button>
 							<button className="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90">Sign up</button>
