@@ -27,8 +27,12 @@ export const Header = () => {
 
 				{/* Desktop CTA */}
 				<div className="hidden items-center gap-3 md:flex">
-					<button className="rounded-lg px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary">Log in</button>
-					<button className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:opacity-90 hover:shadow-md">Sign up</button>
+					<Link href="/login" className="rounded-lg px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
+						Log in
+					</Link>
+					<Link href="/register" className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:opacity-90 hover:shadow-md">
+						Sign up
+					</Link>
 				</div>
 
 				{/* Mobile Menu Button */}
