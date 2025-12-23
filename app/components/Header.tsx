@@ -23,12 +23,6 @@ export const Header = () => {
 					<Link href="/venues" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
 						Explore Venues
 					</Link>
-					<Link href="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-						About
-					</Link>
-					<Link href="/contact" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-						Contact
-					</Link>
 				</nav>
 
 				{/* Desktop CTA */}
