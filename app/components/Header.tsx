@@ -51,8 +51,12 @@ export const Header = () => {
 						</Link>
 
 						<div className="mt-4 flex flex-col gap-2">
-							<button className="rounded-lg border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary">Log in</button>
-							<button className="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90">Sign up</button>
+							<Link href="/login" className="rounded-lg border text-center border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary">
+								Log in
+							</Link>
+							<Link href="/register" className="rounded-lg text-center bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90">
+								Sign up
+							</Link>
 						</div>
 					</nav>
 				</div>
