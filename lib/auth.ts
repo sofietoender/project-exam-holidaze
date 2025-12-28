@@ -44,7 +44,6 @@ export async function login(credentials: LoginData): Promise<UserData> {
 		throw new Error(result.errors?.[0]?.message || "Login failed");
 	}
 
-	// Lagre i localStorage
 	if (result.data?.accessToken) {
 		localStorage.setItem("accessToken", result.data.accessToken);
 		localStorage.setItem("user", JSON.stringify(result.data));
@@ -54,7 +53,6 @@ export async function login(credentials: LoginData): Promise<UserData> {
 }
 
 export async function register(userData: RegisterData): Promise<UserData> {
-	// Først registrer brukeren
 	const registerResponse = await fetch(`${API_BASE}/auth/register`, {
 		method: "POST",
 		headers: {
@@ -70,7 +68,6 @@ export async function register(userData: RegisterData): Promise<UserData> {
 		throw new Error(registerResult.errors?.[0]?.message || "Registration failed");
 	}
 
-	// Deretter logg inn automatisk
 	const loginData = await login({
 		email: userData.email,
 		password: userData.password,
