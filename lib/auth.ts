@@ -13,7 +13,7 @@ interface RegisterData {
 	venueManager?: boolean;
 }
 
-interface UserData {
+export interface UserData {
 	name: string;
 	email: string;
 	avatar?: {
@@ -29,7 +29,7 @@ interface UserData {
 }
 
 export async function login(credentials: LoginData): Promise<UserData> {
-	const response = await fetch(`${API_BASE}/auth/login`, {
+	const response = await fetch(`${API_BASE}/auth/login?_holidaze=true`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
