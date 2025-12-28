@@ -8,10 +8,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { login } from "@/lib/auth";
 
-// Validering
+// Validation
 const loginSchema = z.object({
-	email: z.string().email("Please enter a valid email address"),
+	email: z.email("Please enter a valid email address"),
 	password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -33,11 +34,10 @@ export default function LoginForm() {
 	const onSubmit = async (data: LoginFormData) => {
 		setIsLoading(true);
 		try {
-			// TODO: Implement actual login logic here
-			console.log("Login:", data);
+			const userData = await login(data);
 
 			toast.success("Welcome back!", {
-				description: "You have successfully logged in.",
+				description: `Logged in as ${userData.name}`,
 			});
 
 			router.push("/");
