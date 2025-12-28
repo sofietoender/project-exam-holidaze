@@ -1,10 +1,5 @@
-import Link from "next/link";
+import CreateVenueForm from "@/components/manager/CreateVenueForm";
 
-export default function CreateVenue() {
-	return (
-		<div>
-			<h1>Create Venue page</h1>
-			<Link href="/manager/venues">Tilbake til manager</Link>
-		</div>
-	);
+export default function CreateVenuePage() {
+	return <CreateVenueForm />;
 }

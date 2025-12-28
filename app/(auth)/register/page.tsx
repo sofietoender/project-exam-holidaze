@@ -1,10 +1,5 @@
-import Link from "next/link";
+import RegisterForm from "@/components/auth/RegisterForm";
 
-export default function Register() {
-	return (
-		<div>
-			<h1>Register page</h1>
-			<Link href="/">Hjem</Link>
-		</div>
-	);
+export default function RegisterPage() {
+	return <RegisterForm />;
 }

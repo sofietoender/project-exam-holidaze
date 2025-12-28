@@ -6,6 +6,13 @@ interface LoginData {
 	password: string;
 }
 
+interface RegisterData {
+	name: string;
+	email: string;
+	password: string;
+	venueManager?: boolean;
+}
+
 interface UserData {
 	name: string;
 	email: string;
@@ -37,12 +44,39 @@ export async function login(credentials: LoginData): Promise<UserData> {
 		throw new Error(result.errors?.[0]?.message || "Login failed");
 	}
 
+	// Lagre i localStorage
 	if (result.data?.accessToken) {
 		localStorage.setItem("accessToken", result.data.accessToken);
 		localStorage.setItem("user", JSON.stringify(result.data));
 	}
 
 	return result.data;
+}
+
+export async function register(userData: RegisterData): Promise<UserData> {
+	// Først registrer brukeren
+	const registerResponse = await fetch(`${API_BASE}/auth/register`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"X-Noroff-API-Key": API_KEY,
+		},
+		body: JSON.stringify(userData),
+	});
+
+	const registerResult = await registerResponse.json();
+
+	if (!registerResponse.ok) {
+		throw new Error(registerResult.errors?.[0]?.message || "Registration failed");
+	}
+
+	// Deretter logg inn automatisk
+	const loginData = await login({
+		email: userData.email,
+		password: userData.password,
+	});
+
+	return loginData;
 }
 
 export function logout() {
