@@ -1,14 +1,11 @@
 import { Footer } from "@/components/ui/Footer";
 import { Header } from "@/components/ui/Header";
-import { Hero } from "@/components/ui/Hero";
 
-export default function Home() {
+export default function MainLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<div className="flex min-h-screen flex-col">
 			<Header />
-			<main className="flex-1">
-				<Hero />
-			</main>
+			<main className="flex-1">{children}</main>
 			<Footer />
 		</div>
 	);
