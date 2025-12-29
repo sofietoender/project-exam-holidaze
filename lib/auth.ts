@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 const API_BASE = "https://v2.api.noroff.dev";
 const API_KEY = "b9252c6b-019e-4705-9fdd-cab4541bc61f";
 
@@ -45,8 +47,13 @@ export async function login(credentials: LoginData): Promise<UserData> {
 	}
 
 	if (result.data?.accessToken) {
+		// Save in local storage for components
 		localStorage.setItem("accessToken", result.data.accessToken);
 		localStorage.setItem("user", JSON.stringify(result.data));
+
+		// Save as cookies for proxy
+		Cookies.set("accessToken", result.data.accessToken, { expires: 7 });
+		Cookies.set("user", JSON.stringify(result.data), { expires: 7 });
 	}
 
 	return result.data;
@@ -77,8 +84,13 @@ export async function register(userData: RegisterData): Promise<UserData> {
 }
 
 export function logout() {
+	//remove from local storage
 	localStorage.removeItem("accessToken");
 	localStorage.removeItem("user");
+
+	//remove from cookies
+	Cookies.remove("accessToken");
+	Cookies.remove("user");
 }
 
 export function getToken(): string | null {
