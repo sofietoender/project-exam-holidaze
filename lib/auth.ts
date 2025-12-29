@@ -1,7 +1,11 @@
 import Cookies from "js-cookie";
 
 const API_BASE = "https://v2.api.noroff.dev";
-const API_KEY = "b9252c6b-019e-4705-9fdd-cab4541bc61f";
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+
+if (!API_KEY) {
+	throw new Error("Missing NEXT_PUBLIC_API_KEY in environment variables");
+}
 
 interface LoginData {
 	email: string;
