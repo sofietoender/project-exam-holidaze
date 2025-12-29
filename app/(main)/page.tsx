@@ -7,7 +7,7 @@ export default function Home() {
 		name: "Cozy Beach House",
 		media: [
 			{
-				url: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2",
+				url: "",
 				alt: "Beach house",
 			},
 		],

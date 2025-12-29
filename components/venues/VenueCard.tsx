@@ -32,7 +32,7 @@ const AMENITY_ICONS: Record<string, React.ComponentType<{ className?: string }>>
 };
 
 export default function VenueCard({ venue }: VenueCardProps) {
-	const imageUrl = venue.media?.[0]?.url || "/placeholder.jpg";
+	const imageUrl = venue.media?.[0]?.url || "/placeholder.svg";
 	const location = [venue.location?.city, venue.location?.country].filter(Boolean).join(", ") || "Location not specified";
 
 	// Filtrer amenities som er enabled
