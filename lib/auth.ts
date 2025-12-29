@@ -39,7 +39,7 @@ export async function login(credentials: LoginData): Promise<UserData> {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			"X-Noroff-API-Key": API_KEY,
+			"X-Noroff-API-Key": API_KEY!,
 		},
 		body: JSON.stringify(credentials),
 	});
@@ -68,7 +68,7 @@ export async function register(userData: RegisterData): Promise<UserData> {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			"X-Noroff-API-Key": API_KEY,
+			"X-Noroff-API-Key": API_KEY!,
 		},
 		body: JSON.stringify(userData),
 	});
