@@ -1,7 +1,9 @@
+import SearchBar from "@/components/search/SearchBar";
+
 export function Hero() {
 	return (
 		<section className="py-20 md:py-32">
-			<div>
+			<div className="container mx-auto px-4">
 				<div className="mx-auto max-w-3xl text-center">
 					<h1 className="mb-6 text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl animate-fade-up">
 						Find Your Perfect
@@ -10,7 +12,9 @@ export function Hero() {
 					<p className="mb-8 text-lg text-muted-foreground md:text-xl animate-fade-up" style={{ animationDelay: "100ms" }}>
 						Discover unique accommodations around the world. From cozy cabins to luxury villas, find your next adventure with Holidaze.
 					</p>
-					<div className="animate-fade-up" style={{ animationDelay: "200ms" }}></div>
+					<div className="animate-fade-up" style={{ animationDelay: "200ms" }}>
+						<SearchBar variant="hero" />
+					</div>
 				</div>
 			</div>
 		</section>
