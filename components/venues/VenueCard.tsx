@@ -39,7 +39,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
 	const enabledAmenities = AMENITIES.filter((amenity) => venue.meta?.[amenity.id as keyof typeof venue.meta]);
 
 	return (
-		<Link href={`/venues/${venue.id}`} className="group block overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-lg">
+		<Link href={`/venues/details/${venue.id}`} className="group block overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-lg">
 			{/* Image */}
 			<div className="relative aspect-4/3 overflow-hidden bg-muted">
 				<Image
