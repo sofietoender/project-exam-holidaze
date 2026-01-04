@@ -5,7 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Calendar, MapPin, Users, Trash2, Loader2 } from "lucide-react";
 import { getToken, getUser } from "@/lib/auth";
-import { fetchBookingsByProfile, deleteBooking, Booking } from "@/lib/api/bookings";
+import { fetchBookingsByProfile, deleteBooking } from "@/lib/api/bookings";
+import { Booking } from "@/types/booking";
 import { useRouter } from "next/navigation";
 
 export default function BookingsPage() {

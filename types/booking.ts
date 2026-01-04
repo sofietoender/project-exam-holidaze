@@ -1,5 +1,3 @@
-// types/booking.ts
-
 import { Venue } from "./venue";
 
 export interface Booking {
@@ -9,7 +7,7 @@ export interface Booking {
 	guests: number;
 	created: string;
 	updated: string;
-	venue?: Venue; // Optional - only included with _venue=true
+	venue?: Venue;
 }
 
 export interface BookingsResponse {
@@ -27,5 +25,11 @@ export interface BookingsResponse {
 
 export interface BookingResponse {
 	data: Booking;
-	meta: Record<string, never>;
+}
+
+export interface CreateBookingData {
+	dateFrom: string;
+	dateTo: string;
+	guests: number;
+	venueId: string;
 }

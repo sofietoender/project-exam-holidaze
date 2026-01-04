@@ -1,67 +1,7 @@
 // lib/api/bookings.ts
 
 import { API_BASE, API_KEY } from "../config";
-
-export interface CreateBookingData {
-	dateFrom: string; // ISO 8601 format: "2026-01-15"
-	dateTo: string; // ISO 8601 format: "2026-01-20"
-	guests: number;
-	venueId: string;
-}
-
-export interface Booking {
-	id: string;
-	dateFrom: string;
-	dateTo: string;
-	guests: number;
-	created: string;
-	updated: string;
-	venue?: {
-		id: string;
-		name: string;
-		description: string;
-		media: Array<{
-			url: string;
-			alt: string;
-		}>;
-		price: number;
-		maxGuests: number;
-		rating: number;
-		meta: {
-			wifi: boolean;
-			parking: boolean;
-			breakfast: boolean;
-			pets: boolean;
-		};
-		location: {
-			address?: string;
-			city?: string;
-			zip?: string;
-			country?: string;
-			continent?: string;
-			lat?: number;
-			lng?: number;
-		};
-	};
-}
-
-export interface BookingsResponse {
-	data: Booking[];
-	meta: {
-		isFirstPage: boolean;
-		isLastPage: boolean;
-		currentPage: number;
-		previousPage: number | null;
-		nextPage: number | null;
-		pageCount: number;
-		totalCount: number;
-	};
-}
-
-export interface BookingResponse {
-	data: Booking;
-	meta: Record<string, never>;
-}
+import { BookingsResponse, BookingResponse, CreateBookingData } from "../../types/booking";
 
 /**
  * Fetch all bookings for a profile
@@ -150,6 +90,4 @@ export async function deleteBooking(bookingId: string, accessToken: string): Pro
 
 		throw new Error(errorData?.errors?.[0]?.message || `Failed to delete booking: ${response.statusText}`);
 	}
-
-	// 204 No Content - no response body
 }

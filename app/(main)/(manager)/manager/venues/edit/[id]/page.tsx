@@ -1,34 +1,73 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Loader2, Plus, X } from "lucide-react";
+import { getToken } from "@/lib/auth";
+import { fetchVenueById, updateVenue } from "@/lib/api/venues";
 
 export default function EditVenuePage() {
 	const router = useRouter();
-	const [isLoading, setIsLoading] = useState(false);
-	const [isFetching, setIsFetching] = useState(false);
+	const params = useParams();
+	const venueId = params.id as string;
 
-	// Form state
-	const [name, setName] = useState("Cozy Beach House");
-	const [description, setDescription] = useState("Beautiful beachfront property with stunning ocean views");
-	const [price, setPrice] = useState(150);
-	const [maxGuests, setMaxGuests] = useState(6);
-	const [rating, setRating] = useState(4.8);
-	const [mediaUrls, setMediaUrls] = useState(["https://images.unsplash.com/photo-1499793983690-e29da59ef1c2"]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [isFetching, setIsFetching] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	const [name, setName] = useState("");
+	const [description, setDescription] = useState("");
+	const [price, setPrice] = useState(0);
+	const [maxGuests, setMaxGuests] = useState(1);
+	const [mediaUrls, setMediaUrls] = useState([""]);
 
 	// Amenities
-	const [wifi, setWifi] = useState(true);
-	const [parking, setParking] = useState(true);
+	const [wifi, setWifi] = useState(false);
+	const [parking, setParking] = useState(false);
 	const [breakfast, setBreakfast] = useState(false);
-	const [pets, setPets] = useState(true);
+	const [pets, setPets] = useState(false);
 
 	// Location
-	const [address, setAddress] = useState("123 Beach Road");
-	const [city, setCity] = useState("Miami");
-	const [zip, setZip] = useState("33139");
-	const [country, setCountry] = useState("USA");
+	const [address, setAddress] = useState("");
+	const [city, setCity] = useState("");
+	const [zip, setZip] = useState("");
+	const [country, setCountry] = useState("");
+
+	// Fetch venue data
+	useEffect(() => {
+		async function loadVenue() {
+			const token = getToken();
+			if (!token) return;
+
+			try {
+				const response = await fetchVenueById(venueId);
+				const venue = response.data;
+
+				setName(venue.name);
+				setDescription(venue.description);
+				setPrice(venue.price);
+				setMaxGuests(venue.maxGuests);
+				setMediaUrls(venue.media.length > 0 ? venue.media.map((m) => m.url) : [""]);
+
+				setWifi(venue.meta.wifi);
+				setParking(venue.meta.parking);
+				setBreakfast(venue.meta.breakfast);
+				setPets(venue.meta.pets);
+
+				setAddress(venue.location.address || "");
+				setCity(venue.location.city || "");
+				setZip(venue.location.zip || "");
+				setCountry(venue.location.country || "");
+			} catch (err) {
+				setError(err instanceof Error ? err.message : "Failed to load venue");
+			} finally {
+				setIsFetching(false);
+			}
+		}
+
+		loadVenue();
+	}, [venueId]);
 
 	const addMediaUrl = () => {
 		setMediaUrls([...mediaUrls, ""]);
@@ -44,19 +83,34 @@ export default function EditVenuePage() {
 		setMediaUrls(updated);
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+
+		const token = getToken();
+		if (!token) return;
+
 		setIsLoading(true);
 
-		// API call kommer senere
-		setTimeout(() => {
-			setIsLoading(false);
-			alert("Venue updated (API integration kommer senere)");
+		try {
+			const venueData = {
+				name,
+				description,
+				price,
+				maxGuests,
+				media: mediaUrls.filter((url) => url.trim() !== "").map((url) => ({ url, alt: name })),
+				meta: { wifi, parking, breakfast, pets },
+				location: { address, city, zip, country },
+			};
+
+			await updateVenue(venueId, venueData, token);
 			router.push("/manager/venues");
-		}, 1000);
+		} catch (err) {
+			alert(err instanceof Error ? err.message : "Failed to update venue");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
-	// Loading state
 	if (isFetching) {
 		return (
 			<div className="container mx-auto max-w-2xl px-4 py-8 md:py-12">
@@ -64,11 +118,15 @@ export default function EditVenuePage() {
 				<div className="space-y-6">
 					<div className="h-12 w-full animate-pulse rounded bg-muted" />
 					<div className="h-32 w-full animate-pulse rounded bg-muted" />
-					<div className="grid gap-4 sm:grid-cols-2">
-						<div className="h-12 w-full animate-pulse rounded bg-muted" />
-						<div className="h-12 w-full animate-pulse rounded bg-muted" />
-					</div>
 				</div>
+			</div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="container mx-auto max-w-2xl px-4 py-8">
+				<div className="rounded-lg bg-red-50 p-4 text-sm text-red-600">{error}</div>
 			</div>
 		);
 	}
@@ -91,6 +149,7 @@ export default function EditVenuePage() {
 							type="text"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
+							required
 							placeholder="Cozy Beach House"
 							className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
 						/>
@@ -104,6 +163,7 @@ export default function EditVenuePage() {
 							id="description"
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
+							required
 							placeholder="Describe your venue..."
 							rows={4}
 							className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -120,6 +180,7 @@ export default function EditVenuePage() {
 								type="number"
 								value={price}
 								onChange={(e) => setPrice(Number(e.target.value))}
+								required
 								min={1}
 								className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
 							/>
@@ -133,6 +194,7 @@ export default function EditVenuePage() {
 								type="number"
 								value={maxGuests}
 								onChange={(e) => setMaxGuests(Number(e.target.value))}
+								required
 								min={1}
 								max={100}
 								className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
