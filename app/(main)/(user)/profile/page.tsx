@@ -187,7 +187,7 @@ export default function ProfilePage() {
 				<Link href="/" className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-secondary">
 					<ArrowLeft className="h-5 w-5" />
 				</Link>
-				<h1 className="text-3xl font-bold">Profilinnstillinger</h1>
+				<h1 className="text-3xl font-bold">Profile settings</h1>
 			</div>
 
 			{/* Banner */}
@@ -241,7 +241,7 @@ export default function ProfilePage() {
 						className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
 						rows={3}
 					/>
-					<p className="mt-1 text-xs text-muted-foreground">{bio.length}/160 tegn</p>
+					<p className="mt-1 text-xs text-muted-foreground">{bio.length}/160 characters</p>
 				</div>
 
 				{/* Venue Manager Toggle */}
@@ -250,7 +250,7 @@ export default function ProfilePage() {
 						<label htmlFor="venueManager" className="block text-sm font-medium">
 							Venue Manager
 						</label>
-						<p className="mt-1 text-xs text-muted-foreground">Aktiver dette for å administrere og opprette venues</p>
+						<p className="mt-1 text-xs text-muted-foreground">Enable this to manage and create venue listings</p>
 					</div>
 					<button
 						type="button"
