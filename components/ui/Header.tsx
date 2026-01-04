@@ -9,7 +9,7 @@ import { getUser, logout, UserData } from "@/lib/auth";
 export const Header = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [user, setUser] = useState<UserData | null>(null); // ✅ FIKSET: UserData | null
+	const [user, setUser] = useState<UserData | null>(null);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -22,6 +22,16 @@ export const Header = () => {
 		};
 
 		checkAuth();
+
+		const handleUserUpdate = () => {
+			checkAuth();
+		};
+
+		window.addEventListener("userUpdated", handleUserUpdate);
+
+		return () => {
+			window.removeEventListener("userUpdated", handleUserUpdate);
+		};
 	}, []);
 
 	const handleLogout = () => {
