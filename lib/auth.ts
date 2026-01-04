@@ -1,11 +1,5 @@
 import Cookies from "js-cookie";
-
-const API_BASE = "https://v2.api.noroff.dev";
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
-
-if (!API_KEY) {
-	throw new Error("Missing NEXT_PUBLIC_API_KEY in environment variables");
-}
+import { API_BASE, API_KEY } from "./config";
 
 interface LoginData {
 	email: string;
@@ -88,11 +82,11 @@ export async function register(userData: RegisterData): Promise<UserData> {
 }
 
 export function logout() {
-	//remove from local storage
+	// Remove from local storage
 	localStorage.removeItem("accessToken");
 	localStorage.removeItem("user");
 
-	//remove from cookies
+	// Remove from cookies
 	Cookies.remove("accessToken");
 	Cookies.remove("user");
 }
