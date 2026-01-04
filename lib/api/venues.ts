@@ -1,5 +1,3 @@
-// lib/api/venues.ts
-
 import { VenuesResponse, VenueResponse } from "@/types/venue";
 import { API_BASE, API_KEY } from "../config";
 
@@ -10,9 +8,6 @@ interface FetchVenuesParams {
 	sortOrder?: "asc" | "desc";
 }
 
-/**
- * Fetch multiple venues with optional params
- */
 export async function fetchVenues(params?: FetchVenuesParams): Promise<VenuesResponse> {
 	const { limit = 9, page = 1, sort = "name", sortOrder = "asc" } = params || {};
 
@@ -46,7 +41,7 @@ export async function fetchVenueById(id: string): Promise<VenueResponse> {
 			"Content-Type": "application/json",
 			"X-Noroff-API-Key": API_KEY!,
 		},
-		next: { revalidate: 3600 },
+		cache: "no-store",
 	});
 
 	if (!response.ok) {

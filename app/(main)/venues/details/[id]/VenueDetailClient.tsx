@@ -116,6 +116,21 @@ export default function VenueDetailClient({ venue }: VenueDetailClientProps) {
 			return;
 		}
 
+		// Sjekk om valgte datoer overlapper med eksisterende bookings
+		const isDateBooked = bookedDates.some((bookedDate) => {
+			const checkInTime = checkIn.getTime();
+			const checkOutTime = checkOut.getTime();
+			const bookedTime = bookedDate.getTime();
+
+			// Sjekk om bookedDate er mellom checkIn og checkOut (inklusiv)
+			return bookedTime >= checkInTime && bookedTime <= checkOutTime;
+		});
+
+		if (isDateBooked) {
+			setError("Selected dates are not available. Please choose different dates.");
+			return;
+		}
+
 		setIsBooking(true);
 
 		try {
@@ -128,7 +143,6 @@ export default function VenueDetailClient({ venue }: VenueDetailClientProps) {
 
 			await createBooking(bookingData, token);
 
-			alert("Booking confirmed!");
 			router.push("/bookings");
 		} catch (err) {
 			console.error("Booking error:", err);

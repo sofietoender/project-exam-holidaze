@@ -1,187 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, MapPin, Users, Trash2, Loader2 } from "lucide-react";
-
-// API Response types
-interface Booking {
-	id: string;
-	dateFrom: string;
-	dateTo: string;
-	guests: number;
-	created: string;
-	updated: string;
-	venue: {
-		id: string;
-		name: string;
-		description: string;
-		media: Array<{
-			url: string;
-			alt: string;
-		}>;
-		price: number;
-		maxGuests: number;
-		rating: number;
-		meta: {
-			wifi: boolean;
-			parking: boolean;
-			breakfast: boolean;
-			pets: boolean;
-		};
-		location: {
-			address?: string;
-			city?: string;
-			zip?: string;
-			country?: string;
-			continent?: string;
-			lat?: number;
-			lng?: number;
-		};
-	};
-}
-
-// Dummy bookings matching API structure
-const dummyBookings: Booking[] = [
-	{
-		id: "b1",
-		dateFrom: "2026-02-15T00:00:00.000Z",
-		dateTo: "2026-02-20T00:00:00.000Z",
-		guests: 2,
-		created: "2026-01-01T00:00:00.000Z",
-		updated: "2026-01-01T00:00:00.000Z",
-		venue: {
-			id: "v1",
-			name: "Cozy Beach House",
-			description: "Beautiful beachfront property",
-			media: [
-				{
-					url: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2",
-					alt: "Beach house exterior",
-				},
-			],
-			price: 150,
-			maxGuests: 6,
-			rating: 4.8,
-			meta: {
-				wifi: true,
-				parking: true,
-				breakfast: false,
-				pets: true,
-			},
-			location: {
-				city: "Miami",
-				country: "USA",
-			},
-		},
-	},
-	{
-		id: "b2",
-		dateFrom: "2026-03-10T00:00:00.000Z",
-		dateTo: "2026-03-15T00:00:00.000Z",
-		guests: 4,
-		created: "2026-01-01T00:00:00.000Z",
-		updated: "2026-01-01T00:00:00.000Z",
-		venue: {
-			id: "v2",
-			name: "Mountain Cabin Retreat",
-			description: "Secluded mountain getaway",
-			media: [
-				{
-					url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
-					alt: "Mountain cabin",
-				},
-			],
-			price: 200,
-			maxGuests: 4,
-			rating: 4.9,
-			meta: {
-				wifi: true,
-				parking: true,
-				breakfast: true,
-				pets: false,
-			},
-			location: {
-				city: "Aspen",
-				country: "USA",
-			},
-		},
-	},
-	{
-		id: "b3",
-		dateFrom: "2025-12-01T00:00:00.000Z",
-		dateTo: "2025-12-05T00:00:00.000Z",
-		guests: 2,
-		created: "2025-11-01T00:00:00.000Z",
-		updated: "2025-11-01T00:00:00.000Z",
-		venue: {
-			id: "v3",
-			name: "City Center Apartment",
-			description: "Modern apartment in the heart of the city",
-			media: [
-				{
-					url: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
-					alt: "City apartment",
-				},
-			],
-			price: 120,
-			maxGuests: 2,
-			rating: 4.7,
-			meta: {
-				wifi: true,
-				parking: false,
-				breakfast: false,
-				pets: true,
-			},
-			location: {
-				city: "New York",
-				country: "USA",
-			},
-		},
-	},
-];
+import { getToken, getUser } from "@/lib/auth";
+import { fetchBookingsByProfile, deleteBooking, Booking } from "@/lib/api/bookings";
+import { useRouter } from "next/navigation";
 
 export default function BookingsPage() {
-	const [isLoading, setIsLoading] = useState(false);
+	const router = useRouter();
+	const [bookings, setBookings] = useState<Booking[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [selectedBooking, setSelectedBooking] = useState<string | null>(null);
+	const [error, setError] = useState<string | null>(null);
 
-	// Check if booking is in the past
+	useEffect(() => {
+		async function loadBookings() {
+			const token = getToken();
+			const user = getUser();
+
+			if (!token || !user) {
+				router.push("/login");
+				return;
+			}
+
+			try {
+				const response = await fetchBookingsByProfile(user.name, token);
+				setBookings(response.data);
+			} catch (err) {
+				console.error("Error loading bookings:", err);
+				setError(err instanceof Error ? err.message : "Failed to load bookings");
+			} finally {
+				setIsLoading(false);
+			}
+		}
+
+		loadBookings();
+	}, [router]);
+
 	const isPastBooking = (dateTo: string) => {
 		return new Date(dateTo) < new Date();
 	};
 
-	const upcomingBookings = dummyBookings.filter((b) => !isPastBooking(b.dateTo));
-	const pastBookings = dummyBookings.filter((b) => isPastBooking(b.dateTo));
-
-	const formatDate = (dateString: string) => {
-		const date = new Date(dateString);
-		return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-	};
+	const upcomingBookings = bookings.filter((b) => !isPastBooking(b.dateTo));
+	const pastBookings = bookings.filter((b) => isPastBooking(b.dateTo));
 
 	const handleDeleteClick = (bookingId: string) => {
 		setSelectedBooking(bookingId);
 		setShowDeleteDialog(true);
 	};
 
-	const handleDeleteConfirm = () => {
-		if (selectedBooking) {
-			setDeletingId(selectedBooking);
-			// API call kommer senere
-			setTimeout(() => {
-				setDeletingId(null);
-				setShowDeleteDialog(false);
-				setSelectedBooking(null);
-				alert("Booking deleted (API integration kommer senere)");
-			}, 1000);
+	const handleDeleteConfirm = async () => {
+		if (!selectedBooking) return;
+
+		const token = getToken();
+		if (!token) {
+			router.push("/login");
+			return;
+		}
+
+		setDeletingId(selectedBooking);
+
+		try {
+			await deleteBooking(selectedBooking, token);
+
+			// Remove from state
+			setBookings(bookings.filter((b) => b.id !== selectedBooking));
+
+			setShowDeleteDialog(false);
+			setSelectedBooking(null);
+		} catch (err) {
+			console.error("Error deleting booking:", err);
+			alert(err instanceof Error ? err.message : "Failed to delete booking");
+		} finally {
+			setDeletingId(null);
 		}
 	};
 
 	return (
 		<div className="container mx-auto px-4 py-8 md:py-12">
 			<h1 className="mb-8 text-3xl font-bold">My Bookings</h1>
+
+			{/* Error State */}
+			{error && <div className="mb-6 rounded-lg bg-red-50 p-4 text-sm text-red-600">{error}</div>}
 
 			{/* Loading State */}
 			{isLoading ? (
@@ -197,7 +101,7 @@ export default function BookingsPage() {
 						</div>
 					))}
 				</div>
-			) : dummyBookings.length === 0 ? (
+			) : bookings.length === 0 ? (
 				// Empty State
 				<div className="py-16 text-center">
 					<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
@@ -288,9 +192,9 @@ function BookingCard({ booking, onDelete, isDeleting, isPast }: BookingCardProps
 	return (
 		<div className={`flex flex-col gap-4 rounded-xl border border-border bg-card p-4 sm:flex-row ${isPast ? "opacity-60" : ""}`}>
 			{/* Image */}
-			<Link href={`/venues/${venue?.id}`} className="shrink-0">
+			<Link href={`/venues/details/${venue?.id}`} className="shrink-0">
 				<div className="relative h-32 w-full overflow-hidden rounded-lg sm:w-40">
-					<Image src={imageUrl} alt={venue?.media?.[0]?.alt || venue?.name} fill unoptimized className="object-cover" />
+					<Image src={imageUrl} alt={venue?.media?.[0]?.alt || venue?.name || "Venue"} fill className="object-cover" />
 				</div>
 			</Link>
 
@@ -298,8 +202,8 @@ function BookingCard({ booking, onDelete, isDeleting, isPast }: BookingCardProps
 			<div className="flex flex-1 flex-col justify-between gap-3">
 				<div>
 					<div className="mb-1 flex items-start justify-between gap-2">
-						<Link href={`/venues/${venue?.id}`} className="text-lg font-semibold transition-colors hover:text-primary">
-							{venue?.name}
+						<Link href={`/venues/details/${venue?.id}`} className="text-lg font-semibold transition-colors hover:text-primary">
+							{venue?.name || "Venue"}
 						</Link>
 						{!isPast && <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium">Upcoming</span>}
 					</div>
