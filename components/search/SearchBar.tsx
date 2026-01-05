@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
 interface SearchBarProps {
@@ -10,10 +11,15 @@ interface SearchBarProps {
 
 export default function SearchBar({ variant = "default", defaultValue = "" }: SearchBarProps) {
 	const [query, setQuery] = useState(defaultValue);
+	const router = useRouter();
 
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault();
-		// Logikk kommer senere
+
+		if (!query.trim()) return;
+
+		// Redirect til venues-siden med søkeparameter
+		router.push(`/venues?search=${encodeURIComponent(query.trim())}`);
 	};
 
 	if (variant === "hero") {
