@@ -126,12 +126,6 @@ export default function ManageVenuesPage() {
 					</div>
 					<h2 className="mb-2 text-xl font-semibold">No venues yet</h2>
 					<p className="mb-6 text-muted-foreground">Create your first venue and start accepting bookings!</p>
-					<Link
-						href="/manager/venues/create"
-						className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-					>
-						Create Venue
-					</Link>
 				</div>
 			) : (
 				// Venues List
