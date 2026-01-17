@@ -1,5 +1,3 @@
-// lib/api/bookings.ts
-
 import { API_BASE, API_KEY } from "../config";
 import { BookingsResponse, BookingResponse, CreateBookingData } from "../../types/booking";
 
@@ -21,10 +19,7 @@ export async function fetchBookingsByProfile(profileName: string, accessToken: s
 		let errorData;
 		try {
 			errorData = await response.json();
-			console.error("Fetch bookings error:", JSON.stringify(errorData, null, 2));
-		} catch {
-			console.error("Could not parse bookings error response");
-		}
+		} catch {}
 
 		throw new Error(errorData?.errors?.[0]?.message || `Failed to fetch bookings: ${response.statusText}`);
 	}
@@ -37,8 +32,6 @@ export async function fetchBookingsByProfile(profileName: string, accessToken: s
  */
 export async function createBooking(bookingData: CreateBookingData, accessToken: string): Promise<BookingResponse> {
 	const url = `${API_BASE}/holidaze/bookings`;
-
-	console.log("Creating booking:", bookingData);
 
 	const response = await fetch(url, {
 		method: "POST",
@@ -54,10 +47,7 @@ export async function createBooking(bookingData: CreateBookingData, accessToken:
 		let errorData;
 		try {
 			errorData = await response.json();
-			console.error("Booking error:", JSON.stringify(errorData, null, 2));
-		} catch {
-			console.error("Could not parse booking error response");
-		}
+		} catch {}
 
 		throw new Error(errorData?.errors?.[0]?.message || `Failed to create booking: ${response.statusText}`);
 	}
@@ -83,10 +73,7 @@ export async function deleteBooking(bookingId: string, accessToken: string): Pro
 		let errorData;
 		try {
 			errorData = await response.json();
-			console.error("Delete booking error:", JSON.stringify(errorData, null, 2));
-		} catch {
-			console.error("Could not parse delete error response");
-		}
+		} catch {}
 
 		throw new Error(errorData?.errors?.[0]?.message || `Failed to delete booking: ${response.statusText}`);
 	}

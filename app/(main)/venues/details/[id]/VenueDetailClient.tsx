@@ -1,5 +1,3 @@
-// app/(main)/venues/details/[id]/VenueDetailClient.tsx
-
 "use client";
 
 import { useMemo, useState } from "react";
@@ -145,7 +143,6 @@ export default function VenueDetailClient({ venue }: VenueDetailClientProps) {
 
 			router.push("/bookings");
 		} catch (err) {
-			console.error("Booking error:", err);
 			setError(err instanceof Error ? err.message : "Failed to create booking");
 			setIsBooking(false);
 		}
