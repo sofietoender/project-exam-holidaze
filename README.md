@@ -56,55 +56,7 @@ The project focuses on user experience, accessibility, and responsive design.
 git clone https://github.com/sofietoender/project-exam-holidaze.git
 ```
 
-````
-
-2. Install dependencies:
-
-```bash
-npm install
 ```
 
-### Running locally
 
-```bash
-npm run dev
 ```
-
-Then open:
-[http://localhost:3000](http://localhost:3000)
-
-## Testing
-
-```bash
-npm run test
-```
-
-## API
-
-This project uses the official Noroff Holidaze API.
-
-Documentation:
-[https://docs.noroff.dev/](https://docs.noroff.dev/)
-
-## Deployment
-
-Hosted demo:
-_(add link here)_
-
-## Planning & Design
-
-- Gantt chart:
-- Design prototype (Figma):
-- Style guide:
-- Kanban board:
-
-## Contact
-
-Sofie Tønder
-[Sofie.ts@hotmail.com](mailto:Sofie.ts@hotmail.com)
-
-## Acknowledgments
-
-- Noroff API Documentation
-  [https://docs.noroff.dev/](https://docs.noroff.dev/)
-````
