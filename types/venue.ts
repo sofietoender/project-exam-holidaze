@@ -1,3 +1,5 @@
+import { Booking } from "./booking";
+
 export interface Media {
 	url: string;
 	alt: string;
@@ -23,18 +25,8 @@ export interface VenueMeta {
 export interface VenueOwner {
 	name: string;
 	email: string;
-	avatar?: {
-		url: string;
-		alt: string;
-	};
+	avatar?: Media;
 	bio?: string;
-}
-
-export interface Booking {
-	id: string;
-	dateFrom: string;
-	dateTo: string;
-	guests?: number;
 }
 
 export interface Venue {
