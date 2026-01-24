@@ -43,7 +43,6 @@ export default function VenueDetailClient({ venue }: VenueDetailClientProps) {
 	const [isBooking, setIsBooking] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	// Sjekk om bruker er logget inn
 	const token = getToken();
 	const user = getUser();
 	const isLoggedIn = !!token && !!user;
@@ -103,7 +102,6 @@ export default function VenueDetailClient({ venue }: VenueDetailClientProps) {
 			return;
 		}
 
-		// Sjekk om det er venueManager som prøver å booke sitt eget venue
 		if (user?.venueManager && venue.owner?.email === user.email) {
 			setError("You cannot book your own venue");
 			return;
