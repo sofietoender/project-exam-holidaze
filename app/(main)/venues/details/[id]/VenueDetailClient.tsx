@@ -6,7 +6,7 @@ import Image from "next/image";
 import { MapPin, Star, Users, Wifi, Car, Coffee, PawPrint, ChevronLeft, ChevronRight } from "lucide-react";
 import { AMENITIES } from "@/lib/constants";
 import { Venue } from "@/types/venue";
-import { getToken, getUser } from "@/lib/auth";
+import { useAuthStore } from "@/store/useAuthStore";
 import { createBooking } from "@/lib/api/bookings";
 
 import DatePicker from "react-datepicker";
@@ -36,6 +36,7 @@ function formatDateToISO(date: Date): string {
 
 export default function VenueDetailClient({ venue }: VenueDetailClientProps) {
 	const router = useRouter();
+	const { user, accessToken, isAuthenticated } = useAuthStore();
 	const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 	const [checkIn, setCheckIn] = useState<Date | null>(null);
 	const [checkOut, setCheckOut] = useState<Date | null>(null);
@@ -43,9 +44,7 @@ export default function VenueDetailClient({ venue }: VenueDetailClientProps) {
 	const [isBooking, setIsBooking] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const token = getToken();
-	const user = getUser();
-	const isLoggedIn = !!token && !!user;
+	const isLoggedIn = isAuthenticated();
 
 	const images = venue.media?.length ? venue.media : [{ url: "/placeholder.svg", alt: venue.name }];
 
@@ -118,7 +117,6 @@ export default function VenueDetailClient({ venue }: VenueDetailClientProps) {
 			const checkOutTime = checkOut.getTime();
 			const bookedTime = bookedDate.getTime();
 
-			// Sjekk om bookedDate er mellom checkIn og checkOut (inklusiv)
 			return bookedTime >= checkInTime && bookedTime <= checkOutTime;
 		});
 
@@ -137,7 +135,7 @@ export default function VenueDetailClient({ venue }: VenueDetailClientProps) {
 				venueId: venue.id,
 			};
 
-			await createBooking(bookingData, token);
+			await createBooking(bookingData, accessToken!);
 
 			router.push("/bookings");
 		} catch (err) {
