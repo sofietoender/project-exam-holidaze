@@ -4,13 +4,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, MapPin, Users, Trash2, Loader2 } from "lucide-react";
-import { getToken, getUser } from "@/lib/auth";
+import { useAuthStore } from "@/store/useAuthStore";
 import { fetchBookingsByProfile, deleteBooking } from "@/lib/api/bookings";
 import { Booking } from "@/types/booking";
 import { useRouter } from "next/navigation";
 
 export default function BookingsPage() {
 	const router = useRouter();
+	const hasHydrated = useAuthStore((state) => state._hasHydrated);
+	const { user, accessToken } = useAuthStore();
 	const [bookings, setBookings] = useState<Booking[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -20,16 +22,15 @@ export default function BookingsPage() {
 
 	useEffect(() => {
 		async function loadBookings() {
-			const token = getToken();
-			const user = getUser();
+			if (!hasHydrated) return;
 
-			if (!token || !user) {
+			if (!accessToken || !user) {
 				router.push("/login");
 				return;
 			}
 
 			try {
-				const response = await fetchBookingsByProfile(user.name, token);
+				const response = await fetchBookingsByProfile(user.name, accessToken);
 				setBookings(response.data);
 			} catch (err) {
 				console.error("Error loading bookings:", err);
@@ -40,7 +41,7 @@ export default function BookingsPage() {
 		}
 
 		loadBookings();
-	}, [router]);
+	}, [router, user, accessToken, hasHydrated]);
 
 	const isPastBooking = (dateTo: string) => {
 		return new Date(dateTo) < new Date();
@@ -57,8 +58,7 @@ export default function BookingsPage() {
 	const handleDeleteConfirm = async () => {
 		if (!selectedBooking) return;
 
-		const token = getToken();
-		if (!token) {
+		if (!accessToken) {
 			router.push("/login");
 			return;
 		}
@@ -66,7 +66,7 @@ export default function BookingsPage() {
 		setDeletingId(selectedBooking);
 
 		try {
-			await deleteBooking(selectedBooking, token);
+			await deleteBooking(selectedBooking, accessToken);
 
 			// Remove from state
 			setBookings(bookings.filter((b) => b.id !== selectedBooking));

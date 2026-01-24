@@ -5,12 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { Loader2, ArrowLeft, Pencil } from "lucide-react";
 import { toast } from "sonner";
-import { getUser, getToken } from "@/lib/auth";
+import { useAuthStore } from "@/store/useAuthStore";
 import { fetchProfile, updateProfile } from "@/lib/api/profiles";
 import { Profile, UpdateProfileData } from "@/types/profiles";
 import { ImageEditModal } from "@/components/ImageEditModal";
 
 export default function ProfilePage() {
+	const { user, accessToken, setAuth } = useAuthStore();
 	const [profile, setProfile] = useState<Profile | null>(null);
 	const [bio, setBio] = useState("");
 	const [avatarUrl, setAvatarUrl] = useState("");
@@ -33,16 +34,13 @@ export default function ProfilePage() {
 		try {
 			setIsFetching(true);
 
-			const user = getUser();
-			const token = getToken();
-
-			if (!user || !token) {
-				toast.error("Du må være logget inn for å se profilen din");
+			if (!user || !accessToken) {
+				toast.error("You must be logged in to view your profile");
 				setIsFetching(false);
 				return;
 			}
 
-			const response = await fetchProfile(user.name, token);
+			const response = await fetchProfile(user.name, accessToken);
 			const profileData = response.data;
 
 			setProfile(profileData);
@@ -54,7 +52,7 @@ export default function ProfilePage() {
 			setVenueManager(profileData.venueManager || false);
 		} catch (err) {
 			console.error("Error loading profile:", err);
-			toast.error(err instanceof Error ? err.message : "Kunne ikke laste profil");
+			toast.error(err instanceof Error ? err.message : "Could not load profile");
 		} finally {
 			setIsFetching(false);
 		}
@@ -74,11 +72,8 @@ export default function ProfilePage() {
 
 	const updateProfileImage = async (type: "avatar" | "banner", url: string, alt: string) => {
 		try {
-			const user = getUser();
-			const token = getToken();
-
-			if (!user || !token) {
-				throw new Error("Du må være logget inn");
+			if (!user || !accessToken) {
+				throw new Error("You must be logged in");
 			}
 
 			const updateData: UpdateProfileData = {};
@@ -95,24 +90,21 @@ export default function ProfilePage() {
 				};
 			}
 
-			const response = await updateProfile(user.name, updateData, token);
+			const response = await updateProfile(user.name, updateData, accessToken);
 			setProfile(response.data);
 
-			// Update user in localStorage
+			// Update Zustand store
 			const updatedUser = {
 				...user,
 				avatar: response.data.avatar,
 				banner: response.data.banner,
 			};
-			localStorage.setItem("user", JSON.stringify(updatedUser));
-
-			// Trigger custom event to update Header component
-			window.dispatchEvent(new Event("userUpdated"));
+			setAuth(updatedUser);
 
 			toast.success(`${type === "avatar" ? "Avatar" : "Banner"} updated`);
 		} catch (err) {
 			console.error("Error updating image:", err);
-			toast.error(err instanceof Error ? err.message : "Kunne ikke oppdatere bildet");
+			toast.error(err instanceof Error ? err.message : "Could not update image");
 		}
 	};
 
@@ -121,11 +113,8 @@ export default function ProfilePage() {
 		setIsLoading(true);
 
 		try {
-			const user = getUser();
-			const token = getToken();
-
-			if (!user || !token) {
-				throw new Error("Du må være logget inn");
+			if (!user || !accessToken) {
+				throw new Error("You must be logged in");
 			}
 
 			const updateData: UpdateProfileData = {
@@ -136,24 +125,21 @@ export default function ProfilePage() {
 				updateData.bio = bio.trim();
 			}
 
-			const response = await updateProfile(user.name, updateData, token);
+			const response = await updateProfile(user.name, updateData, accessToken);
 			setProfile(response.data);
 
-			// Update user in localStorage
+			// Update Zustand store
 			const updatedUser = {
 				...user,
 				venueManager: response.data.venueManager,
 				bio: response.data.bio,
 			};
-			localStorage.setItem("user", JSON.stringify(updatedUser));
-
-			// Trigger custom event to update Header component
-			window.dispatchEvent(new Event("userUpdated"));
+			setAuth(updatedUser);
 
 			toast.success("Profile updated");
 		} catch (err) {
 			console.error("Error updating profile:", err);
-			toast.error(err instanceof Error ? err.message : "Kunne ikke oppdatere profil");
+			toast.error(err instanceof Error ? err.message : "Could not update profile");
 		} finally {
 			setIsLoading(false);
 		}
@@ -171,9 +157,9 @@ export default function ProfilePage() {
 		return (
 			<div className="container mx-auto max-w-2xl px-4 py-8">
 				<div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
-					<p>Kunne ikke laste profil</p>
+					<p>Could not load profile</p>
 					<Link href="/login" className="mt-4 inline-block text-primary underline">
-						Logg inn
+						Log in
 					</Link>
 				</div>
 			</div>
@@ -191,7 +177,7 @@ export default function ProfilePage() {
 			</div>
 
 			{/* Banner */}
-			<div className="group relative mb-6 aspect-3/1 overflow-hidden rounded-xl bg-linear-to-br from-blue-50 to-indigo-100 cursor-pointer" onClick={() => setIsBannerModalOpen(true)}>
+			<div className="group relative mb-6 aspect-3/1 overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 cursor-pointer" onClick={() => setIsBannerModalOpen(true)}>
 				{profile.banner?.url && <Image src={profile.banner.url} alt={profile.banner.alt} fill unoptimized className="object-cover" />}
 
 				{/* Edit overlay on hover */}
@@ -234,7 +220,7 @@ export default function ProfilePage() {
 					</label>
 					<textarea
 						id="bio"
-						placeholder="Fortell litt om deg selv..."
+						placeholder="Tell us about yourself..."
 						value={bio}
 						onChange={(e) => setBio(e.target.value)}
 						maxLength={160}
@@ -276,7 +262,7 @@ export default function ProfilePage() {
 						Save
 					</button>
 					<Link href="/" className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-6 py-2 text-sm font-medium transition-colors hover:bg-secondary">
-						Avbryt
+						Cancel
 					</Link>
 				</div>
 			</form>

@@ -1,43 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, Home, User, Calendar, Building, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { getUser, logout, UserData } from "@/lib/auth";
+import { useAuthStore } from "@/store/useAuthStore";
+import { logout as logoutUser } from "@/lib/auth";
 
 export const Header = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [user, setUser] = useState<UserData | null>(null);
+	const hasHydrated = useAuthStore((state) => state._hasHydrated);
+	const { user, isAuthenticated, clearAuth } = useAuthStore();
 	const router = useRouter();
 
-	useEffect(() => {
-		const checkAuth = () => {
-			const userData = getUser();
-			if (userData) {
-				setIsAuthenticated(true);
-				setUser(userData);
-			}
-		};
-
-		checkAuth();
-
-		const handleUserUpdate = () => {
-			checkAuth();
-		};
-
-		window.addEventListener("userUpdated", handleUserUpdate);
-
-		return () => {
-			window.removeEventListener("userUpdated", handleUserUpdate);
-		};
-	}, []);
-
 	const handleLogout = () => {
-		logout();
-		setIsAuthenticated(false);
-		setUser(null);
+		logoutUser();
+		clearAuth();
 		setIsMenuOpen(false);
 		router.push("/");
 	};
@@ -58,7 +36,7 @@ export const Header = () => {
 					<Link href="/venues" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
 						Explore Venues
 					</Link>
-					{isAuthenticated && user?.venueManager && (
+					{hasHydrated && isAuthenticated() && user?.venueManager && (
 						<Link href="/manager/venues" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
 							Manage Venues
 						</Link>
@@ -67,7 +45,7 @@ export const Header = () => {
 
 				{/* Desktop Auth */}
 				<div className="hidden items-center gap-3 md:flex">
-					{isAuthenticated ? (
+					{hasHydrated && isAuthenticated() ? (
 						<div className="relative group">
 							{/* Avatar Button */}
 							<button className="flex items-center gap-2 rounded-lg p-1.5 transition-colors hover:bg-secondary">
@@ -112,7 +90,7 @@ export const Header = () => {
 								</div>
 							</div>
 						</div>
-					) : (
+					) : hasHydrated ? (
 						<>
 							<Link href="/login" className="rounded-lg px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
 								Log in
@@ -121,7 +99,7 @@ export const Header = () => {
 								Sign up
 							</Link>
 						</>
-					)}
+					) : null}
 				</div>
 
 				{/* Mobile Menu Button */}
@@ -139,7 +117,7 @@ export const Header = () => {
 							Explore Venues
 						</Link>
 
-						{isAuthenticated ? (
+						{hasHydrated && isAuthenticated() ? (
 							<>
 								<Link href="/bookings" className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-secondary" onClick={() => setIsMenuOpen(false)}>
 									<Calendar className="h-4 w-4" />
@@ -160,7 +138,7 @@ export const Header = () => {
 									Log out
 								</button>
 							</>
-						) : (
+						) : hasHydrated ? (
 							<div className="mt-4 flex flex-col gap-2">
 								<Link href="/login" className="rounded-lg border text-center border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary" onClick={() => setIsMenuOpen(false)}>
 									Log in
@@ -173,7 +151,7 @@ export const Header = () => {
 									Sign up
 								</Link>
 							</div>
-						)}
+						) : null}
 					</nav>
 				</div>
 			)}

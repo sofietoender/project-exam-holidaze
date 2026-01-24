@@ -9,6 +9,7 @@ import { z } from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { login } from "@/lib/auth";
+import { useAuthStore } from "@/store/useAuthStore";
 
 // Validation
 const loginSchema = z.object({
@@ -20,6 +21,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
 	const router = useRouter();
+	const setAuth = useAuthStore((state) => state.setAuth);
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -35,6 +37,7 @@ export default function LoginForm() {
 		setIsLoading(true);
 		try {
 			const userData = await login(data);
+			setAuth(userData);
 
 			toast.success("Welcome back!", {
 				description: `Logged in as ${userData.name}`,

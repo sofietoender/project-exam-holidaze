@@ -9,6 +9,7 @@ import { z } from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { register as registerUser } from "@/lib/auth";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const registerSchema = z
 	.object({
@@ -30,6 +31,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterForm() {
 	const router = useRouter();
+	const setAuth = useAuthStore((state) => state.setAuth);
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -51,12 +53,14 @@ export default function RegisterForm() {
 	const onSubmit = async (data: RegisterFormData) => {
 		setIsLoading(true);
 		try {
-			await registerUser({
+			const userData = await registerUser({
 				name: data.name,
 				email: data.email,
 				password: data.password,
 				venueManager: data.venueManager,
 			});
+
+			setAuth(userData);
 
 			toast.success("Account created!", {
 				description: "Welcome to Holidaze. You are now logged in.",
