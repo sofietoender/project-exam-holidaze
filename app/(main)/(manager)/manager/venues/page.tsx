@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Edit, Trash2, Users, Calendar, Loader2, MapPin, AlertCircle } from "lucide-react";
-import { getToken, getUser } from "@/lib/auth";
+import { useAuthStore } from "@/store/useAuthStore";
 import { fetchVenuesByProfile } from "@/lib/api/venues";
 import { deleteVenue } from "@/lib/api/venues";
 import { Venue } from "@/types/venue";
 
 export default function ManageVenuesPage() {
+	const hasHydrated = useAuthStore((state) => state._hasHydrated);
+	const { user, accessToken } = useAuthStore();
 	const [venues, setVenues] = useState<Venue[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -21,16 +23,15 @@ export default function ManageVenuesPage() {
 
 	useEffect(() => {
 		async function loadVenues() {
-			const token = getToken();
-			const user = getUser();
+			if (!hasHydrated) return;
 
-			if (!token || !user) {
+			if (!accessToken || !user) {
 				setIsLoading(false);
 				return;
 			}
 
 			try {
-				const response = await fetchVenuesByProfile(user.name, token);
+				const response = await fetchVenuesByProfile(user.name, accessToken);
 				setVenues(response.data);
 			} catch (err) {
 				console.error("Error loading venues:", err);
@@ -41,7 +42,7 @@ export default function ManageVenuesPage() {
 		}
 
 		loadVenues();
-	}, []);
+	}, [hasHydrated, user, accessToken]);
 
 	const handleDeleteClick = (venueId: string) => {
 		setSelectedVenue(venueId);
@@ -51,13 +52,12 @@ export default function ManageVenuesPage() {
 	const handleDeleteConfirm = async () => {
 		if (!selectedVenue) return;
 
-		const token = getToken();
-		if (!token) return;
+		if (!accessToken) return;
 
 		setDeletingId(selectedVenue);
 
 		try {
-			await deleteVenue(selectedVenue, token);
+			await deleteVenue(selectedVenue, accessToken);
 			setVenues(venues.filter((v) => v.id !== selectedVenue));
 			setShowDeleteDialog(false);
 			setSelectedVenue(null);
