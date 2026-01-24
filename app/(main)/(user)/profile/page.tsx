@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Loader2, ArrowLeft, Pencil } from "lucide-react";
@@ -26,11 +26,8 @@ export default function ProfilePage() {
 	const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 	const [isBannerModalOpen, setIsBannerModalOpen] = useState(false);
 
-	useEffect(() => {
-		loadProfile();
-	}, []);
-
-	const loadProfile = async () => {
+	const loadProfile = useCallback(async () => {
+		// ← Wrapped med useCallback
 		try {
 			setIsFetching(true);
 
@@ -56,7 +53,11 @@ export default function ProfilePage() {
 		} finally {
 			setIsFetching(false);
 		}
-	};
+	}, [user, accessToken]);
+
+	useEffect(() => {
+		loadProfile();
+	}, [loadProfile]);
 
 	const handleSaveAvatar = async (url: string, alt: string) => {
 		setAvatarUrl(url);
@@ -177,7 +178,7 @@ export default function ProfilePage() {
 			</div>
 
 			{/* Banner */}
-			<div className="group relative mb-6 aspect-3/1 overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 cursor-pointer" onClick={() => setIsBannerModalOpen(true)}>
+			<div className="group relative mb-6 aspect-3/1 overflow-hidden rounded-xl bg-linear-to-br from-blue-50 to-indigo-100 cursor-pointer" onClick={() => setIsBannerModalOpen(true)}>
 				{profile.banner?.url && <Image src={profile.banner.url} alt={profile.banner.alt} fill unoptimized className="object-cover" />}
 
 				{/* Edit overlay on hover */}
