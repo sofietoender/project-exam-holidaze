@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X, Home, User, Calendar, Building, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -49,14 +50,18 @@ export const Header = () => {
 						<div className="relative group">
 							{/* Avatar Button */}
 							<button className="flex items-center gap-2 rounded-lg p-1.5 transition-colors hover:bg-secondary">
-								<div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold">{user?.name?.charAt(0).toUpperCase()}</div>
+								<div className="h-9 w-9 relative rounded-full overflow-hidden">
+									<Image src={user?.avatar?.url || "/default-avatar.png"} alt={user?.avatar?.alt || user?.name || "User avatar"} fill className="object-cover" />
+								</div>
 							</button>
 
 							{/* Dropdown Menu */}
 							<div className="absolute right-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-card border border-border rounded-lg shadow-lg">
 								{/* User Info */}
 								<div className="flex items-center gap-2 p-3 border-b border-border">
-									<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold">{user?.name?.charAt(0).toUpperCase()}</div>
+									<div className="h-8 w-8 relative rounded-full overflow-hidden">
+										<Image src={user?.avatar?.url || "/default-avatar.png"} alt={user?.avatar?.alt || user?.name || "User avatar"} fill className="object-cover" />
+									</div>
 									<div className="flex flex-col overflow-hidden">
 										<span className="text-sm font-medium truncate">{user?.name}</span>
 										<span className="text-xs text-muted-foreground truncate">{user?.email}</span>
